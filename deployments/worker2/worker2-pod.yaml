@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker2-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker2-kafka-producer
+  template:
+    metadata:
+      labels:
+        app: worker2-kafka-producer
+    spec:
+      containers:
+      - name: worker2-container
+        image: worker2:1.0  # Replace with the name of your Docker image if it's different
+        imagePullPolicy: Never
+        env:
+        - name: KAFKA_BROKER_SERVICE
+          value: "my-kafka.kafka.svc.cluster.local:9092"  # Kafka broker service
+        - name: KAFKA_USERNAME
+          value: "user1"  # Username for Kafka
+        - name: KAFKA_PASSWORD_ENCODED
+          valueFrom:
+            secretKeyRef:
+              name: my-kafka-user-passwords
+              key: client-passwords
+        volumeMounts:
+        - mountPath: "/mnt"
+          name: worker2-volume
+      volumes:
+      - name: worker2-volume
+        persistentVolumeClaim:
+          claimName: worker2-pvc  # Make sure the PVC exists
+      nodeSelector:
+        kubernetes.io/hostname: kind-worker2  # Ensures scheduling on kind-worker node

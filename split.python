@@ -1,0 +1,15 @@
+import pandas as pd
+
+# Replace 'your_dataset.csv' with the path to your dataset
+df = pd.read_csv('/home/lab1/FL_project/breast-cancer.csv')
+
+# Split the dataframe into three parts
+df1 = df.iloc[0:100]
+df2 = df.iloc[100:200]
+df3 = df.iloc[200:300]
+
+df1.to_csv('parts/data_part1.csv', index=False)
+df2.to_csv('parts/data_part2.csv', index=False)
+df3.to_csv('parts/data_part3.csv', index=False)
+
+print(len(df1), len(df2), len(df3))

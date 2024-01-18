@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker3-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker3-kafka-producer
+  template:
+    metadata:
+      labels:
+        app: worker3-kafka-producer
+    spec:
+      containers:
+      - name: worker3-container
+        image: worker3:1.0  # Replace with the name of your Docker image if it's different
+        imagePullPolicy: Never
+        env:
+        - name: KAFKA_BROKER_SERVICE
+          value: "my-kafka.kafka.svc.cluster.local:9092"  # Kafka broker service
+        - name: KAFKA_USERNAME
+          value: "user1"  # Username for Kafka
+        - name: KAFKA_PASSWORD_ENCODED
+          valueFrom:
+            secretKeyRef:
+              name: my-kafka-user-passwords
+              key: client-passwords
+        volumeMounts:
+        - mountPath: "/mnt"
+          name: worker3-volume
+      volumes:
+      - name: worker3-volume
+        persistentVolumeClaim:
+          claimName: worker3-pvc
+      nodeSelector:
+        kubernetes.io/hostname: kind-worker3
