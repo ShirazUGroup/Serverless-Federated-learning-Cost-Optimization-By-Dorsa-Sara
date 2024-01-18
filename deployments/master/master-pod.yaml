@@ -12,6 +12,7 @@ spec:
       labels:
         app: master-kafka-consumer
     spec:
+      restartPolicy: Always
       containers:
       - name: master-container
         image: master:1.0  # Replace with the name of your Docker image if it's different
@@ -20,7 +21,7 @@ spec:
         - name: KAFKA_BROKER_SERVICE
           value: "my-kafka.kafka.svc.cluster.local:9092"  # Kafka broker service
         - name: KAFKA_CONSUMER_GROUP
-          value: "my-consumer-group"  # Consumer group
+          value: "master-group"  # Consumer group
         - name: KAFKA_USERNAME
           value: "user1"  # Username for Kafka
         - name: KAFKA_CONSUMER_PASSWORD
@@ -28,6 +29,12 @@ spec:
             secretKeyRef:
               name: my-kafka-user-passwords
               key: client-passwords
+        - name: KAFKA_AUTO_OFFSET_RESET
+          value: "latest"
+        - name: KAFKA_CONSUMER_TOPIC
+          value: "workers_topic"
+        - name: KAFKA_PRODUCER_TOPIC
+          value: "master"
         # Additional environment variables as needed
       nodeSelector:
         kubernetes.io/hostname: kind-control-plane  # Control-plane label may vary based on the cluster setup

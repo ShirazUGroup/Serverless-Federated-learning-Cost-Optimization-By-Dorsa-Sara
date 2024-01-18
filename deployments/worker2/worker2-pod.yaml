@@ -12,6 +12,7 @@ spec:
       labels:
         app: worker2-kafka-producer
     spec:
+      restartPolicy: Always
       containers:
       - name: worker2-container
         image: worker2:1.0  # Replace with the name of your Docker image if it's different
@@ -26,6 +27,8 @@ spec:
             secretKeyRef:
               name: my-kafka-user-passwords
               key: client-passwords
+        - name: KAFKA_CONSUMER_GROUP
+          value: "worker2-group"  # Unique consumer group for worker1
         volumeMounts:
         - mountPath: "/mnt"
           name: worker2-volume
